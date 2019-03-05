@@ -7,15 +7,10 @@ import (
 	"time"
 )
 
-func CopyMap(m map[string]interface{}) map[string]interface{} {
-	cp := make(map[string]interface{})
+func CopyMap(m map[string]string) map[string]string {
+	cp := make(map[string]string)
 	for k, v := range m {
-		vm, ok := v.(map[string]interface{})
-		if ok {
-			cp[k] = vm
-		} else {
-			cp[k] = v
-		}
+		cp[k] = v
 	}
 	return cp
 }

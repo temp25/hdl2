@@ -101,9 +101,9 @@ func main() {
 			if *listFormatsFlag {
 				//list video formats
 				fmt.Println("Listing video formats for video id, ", videoId)
-				videoFormats := utils.GetVideoFormats(videoUrl, videoId)//, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
-				fmt.Printf("\nmasterPlaybackPageContentsBytes : \n%s\n\n", videoFormats)
-				utils.ParseM3u8Content(videoFormats)
+				/*videoFormats := */utils.GetVideoFormats(videoUrl, videoId)//, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
+				//fmt.Printf("\nmasterPlaybackPageContentsBytes : \n%s\n\n", videoFormats)
+				//utils.ParseM3u8Content(videoFormats)
 			} else if *formatFlag != "" {
 				if !strings.HasPrefix(*formatFlag, "hls-") {
 					fmt.Println("Invalid format specified")

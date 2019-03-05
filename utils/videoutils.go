@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 func GetVideoFormats(videoUrl string, videoId string) string {
@@ -36,6 +37,13 @@ func GetVideoFormats(videoUrl string, videoId string) string {
 	}
 
 	masterPlaybackUrl := GetMasterPlaybackUrl(playbackUriContentBytes)
+	
+	var queryParams string
+	masterPlaybackUrlQueryParam := strings.Split(masterPlaybackUrl, "?")
+	
+	if len(masterPlaybackUrlQueryParam) > 1 {
+	    queryParams = masterPlaybackUrlQueryParam[1]
+	}
 
 	masterPlaybackPageContentsBytes, err := Make_Get_Request(masterPlaybackUrl, requestHeaders)
 
@@ -45,6 +53,10 @@ func GetVideoFormats(videoUrl string, videoId string) string {
 
 	//fmt.Printf("\nmasterPlaybackPageContentsBytes : \n%s\n", masterPlaybackPageContentsBytes)
 	
-	return fmt.Sprintf("%s", masterPlaybackPageContentsBytes)
+	//return fmt.Sprintf("%s", masterPlaybackPageContentsBytes)
+	
+	ParseM3u8Content(fmt.Sprintf("%s", masterPlaybackPageContentsBytes), masterPlaybackUrl, queryParams)
+	
+	return ""
 
 }
