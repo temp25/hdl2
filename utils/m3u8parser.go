@@ -48,28 +48,24 @@ func ParseM3u8Content(m3u8Content string,playbackUrl string, playbackUrlData str
                 kForm := fmt.Sprintf("%dk", kFactor)
                 
                 m3u8Info["K-FORM"] = kForm
-                m3u8Info["STREAM-URL"] = func() string {
-                    streamUrl := func() string {
-                        if strings.HasPrefix(line, "http") {
-                            return line
-                        }
-                        
-                        return strings.Replace(line, "master.m3u8", playbackUrl, -1)
-                    }()
-                    
-                    if !strings.Contains(streamUrl, "~acl=/*~hmac") {
-                        if !strings.Contains(streamUrl, "?") {
-                            streamUrl += "?"
-                        }
-                        streamUrl += ("&" + playbackUrlData)
-                    }
-                    
-                    return streamUrl
-                }()
                 
-                //for key, value := range m3u8Info {
-                //    fmt.Println("Key : ", key, "\t Value : ", value)
-                //}
+                streamUrl := line
+                
+                if !strings.HasPrefix(line, "http") {
+                   streamUrl = strings.Replace(playbackUrl, "master.m3u8", line, -1)
+                }
+                
+                if !strings.Contains(streamUrl, "~acl=/*~hmac") {
+                    if !strings.Contains(streamUrl, "?") {
+                        streamUrl += "?"
+                    }
+                    streamUrl += ("&" + playbackUrlData)
+                }
+                
+                re := regexp.MustCompile(`\r`)
+                streamUrl = re.ReplaceAllString(streamUrl, "")
+                
+                m3u8Info["STREAM-URL"] = streamUrl
                 
                 urlFormats[fmt.Sprintf("hls-%d", kFactor)] = CopyMap(m3u8Info)
                 
