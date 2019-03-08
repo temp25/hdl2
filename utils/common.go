@@ -44,3 +44,34 @@ func GetDateStr(timeFloat64 float64) string {
 	}
 	return time.Unix(0, timeMillis*int64(time.Millisecond)).In(location).String()
 }
+
+func FetchPairMatchingKey(array []string, item string) string {
+	
+	for _, value := range array {
+		splitValues := strings.SplitN(value, "=", 2)
+		if(len(splitValues) > 1){
+		    
+		    if strings.EqualFold(splitValues[0], "PATH") { //case insensitive search
+		    
+		        pathValues := strings.FieldsFunc(splitValues[1], SplitSemiColonOrColon)
+		        
+		        //Iterate PATH env values to see if a path exists
+		        for _, pathValue := range pathValues {
+		            if strings.Contains(pathValue, item) {
+		                return pathValue
+		            }
+	            }
+
+		        
+		    }else if strings.Contains(splitValues[0], item) {
+				return splitValues[1]
+			}
+		}
+	}
+	
+    return ""
+}
+
+func SplitSemiColonOrColon(r rune) bool {
+	return r == ';' || r == ':'
+}

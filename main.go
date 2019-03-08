@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	//"text/tabwriter"
 )
 
 //flag descriptions
@@ -100,16 +101,35 @@ func main() {
 		if isValidUrl {
 			if *listFormatsFlag {
 				//list video formats
-				fmt.Println("Listing video formats for video id, ", videoId)
-				/*videoFormats := */utils.GetVideoFormats(videoUrl, videoId)//, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
-				//fmt.Printf("\nmasterPlaybackPageContentsBytes : \n%s\n\n", videoFormats)
-				//utils.ParseM3u8Content(videoFormats)
+				
+				utils.ListVideoFormats(videoUrl, videoId)
+				
+				/*fmt.Println("Listing video formats for video id, ", videoId)
+				videoFormats := utils.GetVideoFormats(videoUrl, videoId)//, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
+				
+				//NewWriter(io.Writer, minWidth, tabWidth, padding, padchar, flags)
+                tw := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', 0) //tabwriter.Debug
+                fmt.Fprintln(tw, "format code\textension\tresolution\tbandwidth\tcodec & frame rate\t")
+        
+        		for formateId, formatInfo := range videoFormats {
+        			if frameRate, isFrameRatePresent := formatInfo["FRAME-RATE"]; isFrameRatePresent {
+        				fmt.Fprintf(tw, "%s\tmp4\t%s\t%s\t%s  %s fps\n", formateId, formatInfo["RESOLUTION"], formatInfo["K-FORM"], formatInfo["CODECS"], frameRate)
+        			} else {
+        				fmt.Fprintf(tw, "%s\tmp4\t%s\t%s\t%s\n", formateId, formatInfo["RESOLUTION"], formatInfo["K-FORM"], formatInfo["CODECS"])
+        			}
+        
+        		}
+        		tw.Flush()
+        		os.Exit(0)*/
+				
 			} else if *formatFlag != "" {
 				if !strings.HasPrefix(*formatFlag, "hls-") {
 					fmt.Println("Invalid format specified")
 					os.Exit(-1)
 				} else {
-					//TODO: add code for download
+
+					utils.DownloadVideo(videoUrl, videoId, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
+					
 				}
 			} else {
 				//TODO: Check for other flags if associated with url if any
