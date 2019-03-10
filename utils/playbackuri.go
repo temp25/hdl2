@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+var playbackUriRetryCount = 0
+
+//TODO: show retry info upon debug level
 func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string) (string, map[string]string, error) {
 
 	var metadata = make(map[string]interface{})
@@ -23,7 +26,14 @@ func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string
 			//videoId := helper.After(k, "/")
 			if len(videoId) != 0 && strings.Contains(videoUrl, videoId) {
 
-				root := result[k].(map[string]interface{})
+				root, isCastOk := result[k].(map[string]interface{})
+
+				if !isCastOk && (playbackUriRetryCount+1 < 5) {
+					playbackUriRetryCount++
+					//fmt.Printf("GetPlaybackUri: cast to map[string]interface{} failed. retrying count : #%d\n", playbackUriRetryCount)
+					return GetPlaybackUri(videoUrlPageContents, videoUrl, videoId)
+				}
+
 				initialState := root["initialState"].(map[string]interface{})
 				contentData := initialState["contentData"].(map[string]interface{})
 				content := contentData["content"].(map[string]interface{})
@@ -40,9 +50,7 @@ func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string
 	} else {
 		return "", nil, errors.New("Invalid appState JSON. Cannot retrieve playbackUri")
 	}
-
-	//playbackUri := metadata["playbackUri"].(string)
-
+	
 	if playbackUri, ok := metadata["playbackUri"].(string); ok {
 		metaDataMap := make(map[string]string)
 

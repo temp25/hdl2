@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	//"text/tabwriter"
 )
 
 //flag descriptions
@@ -18,6 +17,8 @@ var formatFlagDesc = "Video format to download video in specified resolution"
 var ffmpegPathFlagDesc = "Location of the ffmpeg binary(absolute path)"
 var metadataFlagDesc = "Add metadata to the video file"
 var outputFileNameFlagDesc = "Output file name"
+var titleFlagDesc = "Prints video title and exit"
+var descriptionFlagDesc = "Prints video description and exit"
 
 //flag declarations
 var helpFlag = flag.Bool("help", false, helpFlagDesc)
@@ -26,6 +27,8 @@ var formatFlag = flag.String("format", "", formatFlagDesc)
 var ffmpegPathFlag = flag.String("ffmpeg-location", "", ffmpegPathFlagDesc)
 var metadataFlag = flag.Bool("add-metadata", false, metadataFlagDesc)
 var outputFileNameFlag = flag.String("output", "", outputFileNameFlagDesc)
+var titleFlag = flag.Bool("get-title", false, titleFlagDesc)
+var descriptionFlag = flag.Bool("get-description", false, descriptionFlagDesc)
 
 func init() {
 	//shorthand notations
@@ -34,6 +37,8 @@ func init() {
 	flag.StringVar(formatFlag, "f", "", formatFlagDesc)
 	flag.BoolVar(metadataFlag, "m", false, metadataFlagDesc)
 	flag.StringVar(outputFileNameFlag, "o", "", outputFileNameFlagDesc)
+	flag.BoolVar(titleFlag, "t", false, titleFlagDesc)
+	flag.BoolVar(descriptionFlag, "i", false, descriptionFlagDesc)
 
 	//custom flag usage
 	flag.Usage = func() {
@@ -44,6 +49,8 @@ func init() {
 		fmt.Fprintf(os.Stdout, "-f, --format\t\t%s\n", formatFlagDesc)
 		fmt.Fprintf(os.Stdout, "--ffmpeg-location\t%s\n", ffmpegPathFlagDesc)
 		fmt.Fprintf(os.Stdout, "-m, --add-metadata\t%s\n", metadataFlagDesc)
+		fmt.Fprintf(os.Stdout, "-t, --get-title\t\t%s\n", titleFlagDesc)
+		fmt.Fprintf(os.Stdout, "-i, --get-description\t%s\n", descriptionFlagDesc)
 		fmt.Fprintf(os.Stdout, "-o, --output\t\t%s\n", outputFileNameFlagDesc)
 		os.Exit(0)
 		//flag.PrintDefaults()
@@ -51,16 +58,6 @@ func init() {
 }
 
 func main() {
-	/*
-	   contentBytes, err := utils.Make_Get_Request("https://hssouthsp-vh.akamaihd.net/i/videos/vijay_hd/chinnathambi/149/master_,106,180,400,800,1300,2000,3000,4500,kbps.mp4.csmil/master.m3u8?hdnea=st=1551575624~exp=1551577424~acl=/*~hmac=3d89f2aab02315ee100156209746e0e9f3bc70b0b52c17573300b5caa517cfd6")//"http://www.google.com")
-	   if err != nil {
-	       log.Fatal(fmt.Errorf("%s. Error msg : %s", err, contentBytes))
-	   }
-
-	   content := fmt.Sprintf("%s", contentBytes)
-
-	   fmt.Println(content)
-	*/
 
 	flag.Parse()
 	flagCount := len(flag.Args())
@@ -81,12 +78,12 @@ func main() {
 		}
 		switch parsedUrl.Scheme {
 		case "":
-			fmt.Println("Replacing empty url scheme with https")
+			//fmt.Println("Replacing empty url scheme with https")
 			parsedUrl.Scheme = "https"
 		case "https":
 			//do nothing
 		case "http":
-			fmt.Println("Replacing http url scheme with https")
+			//fmt.Println("Replacing http url scheme with https")
 			parsedUrl.Scheme = "https"
 		default:
 			fmt.Println("Invalid url scheme please enter valid one")
@@ -99,28 +96,10 @@ func main() {
 
 		isValidUrl, videoId := utils.IsValidHotstarUrl(videoUrl)
 		if isValidUrl {
-			if *listFormatsFlag {
+			if *listFormatsFlag || *titleFlag || *descriptionFlag {
 				//list video formats
 				
-				utils.ListVideoFormats(videoUrl, videoId)
-				
-				/*fmt.Println("Listing video formats for video id, ", videoId)
-				videoFormats := utils.GetVideoFormats(videoUrl, videoId)//, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
-				
-				//NewWriter(io.Writer, minWidth, tabWidth, padding, padchar, flags)
-                tw := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', 0) //tabwriter.Debug
-                fmt.Fprintln(tw, "format code\textension\tresolution\tbandwidth\tcodec & frame rate\t")
-        
-        		for formateId, formatInfo := range videoFormats {
-        			if frameRate, isFrameRatePresent := formatInfo["FRAME-RATE"]; isFrameRatePresent {
-        				fmt.Fprintf(tw, "%s\tmp4\t%s\t%s\t%s  %s fps\n", formateId, formatInfo["RESOLUTION"], formatInfo["K-FORM"], formatInfo["CODECS"], frameRate)
-        			} else {
-        				fmt.Fprintf(tw, "%s\tmp4\t%s\t%s\t%s\n", formateId, formatInfo["RESOLUTION"], formatInfo["K-FORM"], formatInfo["CODECS"])
-        			}
-        
-        		}
-        		tw.Flush()
-        		os.Exit(0)*/
+				utils.ListVideoFormats(videoUrl, videoId, *titleFlag, *descriptionFlag)
 				
 			} else if *formatFlag != "" {
 				if !strings.HasPrefix(*formatFlag, "hls-") {
