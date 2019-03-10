@@ -36,10 +36,7 @@ func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]str
 	}
 	
 	videoUrlContent := fmt.Sprintf("%s", videoUrlContentBytes)
-
-	//debug line
-	fmt.Println("videoUrlContent : \n", videoUrlContent)
-
+	
 	playbackUri, videoMetadata, err := GetPlaybackUri(videoUrlContent, videoUrl, videoId)
 
 	if err != nil {
@@ -70,9 +67,6 @@ func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]str
 	    }
 		log.Fatal(fmt.Errorf("Error occurred : %s", err))
 	}
-
-	//debug line
-	fmt.Println("playbackUriContentBytes : %s\n", fmt.Sprintf("%s", playbackUriContentBytes))
 	
 	masterPlaybackUrl, err := GetMasterPlaybackUrl(playbackUriContentBytes)
 
