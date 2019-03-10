@@ -1,11 +1,11 @@
 package tests
 
 import (
-	"testing"
+	"fmt"
 	"github.com/temp25/hdl2/utils"
 	"io/ioutil"
 	"log"
-	"fmt"
+	"testing"
 )
 
 func TestGetPlaybackUri_ValidPageContents(t *testing.T) {
@@ -14,13 +14,13 @@ func TestGetPlaybackUri_ValidPageContents(t *testing.T) {
 		log.Fatal(err)
 	}
 
-    expectedPlaybackUri := "https://api.hotstar.com/h/v1/play?contentId=1100003795"
-    
-    actualPlaybackUri, _, err := utils.GetPlaybackUri(fmt.Sprintf("%s", testPageContents), "http://www.hotstar.com/tv/chinnathambi/15301/chinnathambi-yearns-for-nandini/1100003795", "1100003795")
+	expectedPlaybackUri := "https://api.hotstar.com/h/v1/play?contentId=1100003795"
 
-    if err == nil && expectedPlaybackUri != actualPlaybackUri {
-        t.Error("Expected", expectedPlaybackUri, " but got", actualPlaybackUri)
-    }
+	actualPlaybackUri, _, err := utils.GetPlaybackUri(fmt.Sprintf("%s", testPageContents), "http://www.hotstar.com/tv/chinnathambi/15301/chinnathambi-yearns-for-nandini/1100003795", "1100003795")
+
+	if err == nil && expectedPlaybackUri != actualPlaybackUri {
+		t.Error("Expected", expectedPlaybackUri, " but got", actualPlaybackUri)
+	}
 }
 
 func TestGetPlaybackUri_InvalidPageContents(t *testing.T) {
@@ -29,11 +29,11 @@ func TestGetPlaybackUri_InvalidPageContents(t *testing.T) {
 		log.Fatal(err)
 	}
 
-    expectedPlaybackUriError := "Invalid appState JSON. Cannot retrieve playbackUri"
-    
-    _, _, actualPlaybackUriError := utils.GetPlaybackUri(fmt.Sprintf("%s", testPageContents), "http://www.hotstar.com/tv/chinnathambi/15301/chinnathambi-yearns-for-nandini/1100003795", "1100003795")
+	expectedPlaybackUriError := "Invalid appState JSON. Cannot retrieve playbackUri"
 
-    if actualPlaybackUriError != nil && expectedPlaybackUriError != actualPlaybackUriError.Error() {
-        t.Error("Expected", expectedPlaybackUriError, " but got", actualPlaybackUriError)
-    }
+	_, _, actualPlaybackUriError := utils.GetPlaybackUri(fmt.Sprintf("%s", testPageContents), "http://www.hotstar.com/tv/chinnathambi/15301/chinnathambi-yearns-for-nandini/1100003795", "1100003795")
+
+	if actualPlaybackUriError != nil && expectedPlaybackUriError != actualPlaybackUriError.Error() {
+		t.Error("Expected", expectedPlaybackUriError, " but got", actualPlaybackUriError)
+	}
 }

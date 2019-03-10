@@ -7,7 +7,7 @@ import (
 )
 
 func Make_Get_Request(url string, headers map[string]string) ([]byte, error) {
-	
+
 	request, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {

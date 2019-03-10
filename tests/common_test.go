@@ -1,15 +1,15 @@
 package tests
 
 import (
-	"testing"
 	"github.com/temp25/hdl2/utils"
 	"reflect"
+	"testing"
 )
 
 func TestCopyMap(t *testing.T) {
-	originalMap := map[string]string {
-		"Name":	"Scott",
-		"Designation":	"Software Evangelist",
+	originalMap := map[string]string{
+		"Name":        "Scott",
+		"Designation": "Software Evangelist",
 	}
 
 	clonedMap := utils.CopyMap(originalMap)

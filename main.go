@@ -98,9 +98,9 @@ func main() {
 		if isValidUrl {
 			if *listFormatsFlag || *titleFlag || *descriptionFlag {
 				//list video formats
-				
+
 				utils.ListVideoFormats(videoUrl, videoId, *titleFlag, *descriptionFlag)
-				
+
 			} else if *formatFlag != "" {
 				if !strings.HasPrefix(*formatFlag, "hls-") {
 					fmt.Println("Invalid format specified")
@@ -108,7 +108,7 @@ func main() {
 				} else {
 
 					utils.DownloadVideo(videoUrl, videoId, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
-					
+
 				}
 			} else {
 				//TODO: Check for other flags if associated with url if any

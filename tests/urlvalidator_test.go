@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"testing"
 	"github.com/temp25/hdl2/utils"
+	"testing"
 )
 
 func TestIsValidHotstarUrl_ValidUrl(t *testing.T) {

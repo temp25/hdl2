@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
 func GetMasterPlaybackUrl(playbackUriPageContents []byte) (string, error) {

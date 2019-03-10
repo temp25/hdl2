@@ -50,7 +50,7 @@ func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string
 	} else {
 		return "", nil, errors.New("Invalid appState JSON. Cannot retrieve playbackUri")
 	}
-	
+
 	if playbackUri, ok := metadata["playbackUri"].(string); ok {
 		metaDataMap := make(map[string]string)
 

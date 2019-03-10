@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"testing"
 	"github.com/temp25/hdl2/utils"
+	"testing"
 )
 
 func TestGetMasterPlaybackUrl_ValidStatusCode(t *testing.T) {
@@ -11,7 +11,7 @@ func TestGetMasterPlaybackUrl_ValidStatusCode(t *testing.T) {
 
 	actualMasterPlaybackUrl, err := utils.GetMasterPlaybackUrl([]byte(playbackUriContent))
 
-	if  err == nil && expectedMasterPlaybackUrl != actualMasterPlaybackUrl {
+	if err == nil && expectedMasterPlaybackUrl != actualMasterPlaybackUrl {
 		t.Error("Expected", expectedMasterPlaybackUrl, " but got", actualMasterPlaybackUrl)
 	}
 }
@@ -19,7 +19,7 @@ func TestGetMasterPlaybackUrl_ValidStatusCode(t *testing.T) {
 func TestGetMasterPlaybackUrl_InvalidStatusCode(t *testing.T) {
 	playbackUriContent := `{"body":{"results":{"item":{"errorMessage":"Access Denied"},"responseType":"ITEM"}},"statusCode":"ERR","statusCodeValue":401}`
 	expectedError := "Invalid status code 401"
-	
+
 	_, actualError := utils.GetMasterPlaybackUrl([]byte(playbackUriContent))
 
 	if expectedError != actualError.Error() {
