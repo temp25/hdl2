@@ -2,6 +2,10 @@ package utils
 
 import (
 	"regexp"
+	"net/url"
+	"log"
+	"fmt"
+	"os"
 )
 
 func reSubMatchMap(r *regexp.Regexp, str string) map[string]string {
@@ -25,4 +29,33 @@ func IsValidHotstarUrl(videoUrl string) (bool, string) {
 	}
 
 	return false, ""
+}
+
+//GetParsedVideoUrl parses given video url for proper url scheme.
+func GetParsedVideoUrl(videoUrl string) string {
+	parsedUrl, err := url.Parse(videoUrl)
+	
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	switch parsedUrl.Scheme {
+		case "":
+				//fmt.Println("Replacing empty url scheme with https")
+				parsedUrl.Scheme = "https"
+		case "https":
+					//do nothing
+		case "http":
+					//fmt.Println("Replacing http url scheme with https")
+					parsedUrl.Scheme = "https"
+		default:
+				fmt.Println("Invalid url scheme please enter valid one")
+				os.Exit(-1)
+	}
+	
+	videoUrl = fmt.Sprintf("%v", parsedUrl)
+	
+	fmt.Println("Parsed video url is", parsedUrl)
+	
+	return videoUrl
 }

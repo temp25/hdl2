@@ -72,28 +72,9 @@ func main() {
 		flag.Usage()
 		os.Exit(-1)
 	} else if videoUrl := flag.Args()[0]; videoUrl != "" {
-		parsedUrl, err := url.Parse(videoUrl)
-		if err != nil {
-			log.Fatal(err)
-		}
-		switch parsedUrl.Scheme {
-		case "":
-			//fmt.Println("Replacing empty url scheme with https")
-			parsedUrl.Scheme = "https"
-		case "https":
-			//do nothing
-		case "http":
-			//fmt.Println("Replacing http url scheme with https")
-			parsedUrl.Scheme = "https"
-		default:
-			fmt.Println("Invalid url scheme please enter valid one")
-			os.Exit(-1)
-		}
-
-		videoUrl = fmt.Sprintf("%v", parsedUrl)
-
-		fmt.Println("Parsed video url is", parsedUrl)
-
+		
+		videoUrl = utils.GetParsedVideoUrl(videoUrl)
+		
 		isValidUrl, videoId := utils.IsValidHotstarUrl(videoUrl)
 		if isValidUrl {
 			if *listFormatsFlag || *titleFlag || *descriptionFlag {
