@@ -10,8 +10,9 @@ import (
 
 var playbackUriRetryCount = 0
 
-//TODO: show retry info upon debug level
+//GetPlaybackUri gets the playback uri from the metadata in the given page contents.
 func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string) (string, map[string]string, error) {
+//TODO: show retry info upon debug level
 
 	var metadata = make(map[string]interface{})
 	appStateSearchRegex := *regexp.MustCompile(`<script>window.APP_STATE=(.+?)</script>`)
@@ -94,8 +95,8 @@ func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string
 
 		return playbackUri, metaDataMap, nil
 
-	} else {
-		return "", nil, errors.New("Error msg : Cannot retrieve playbackUri")
 	}
+	
+	return "", nil, errors.New("Error msg : Cannot retrieve playbackUri")
 
 }

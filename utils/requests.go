@@ -6,7 +6,8 @@ import (
 	"net/http"
 )
 
-func Make_Get_Request(url string, headers map[string]string) ([]byte, error) {
+//MakeGetRequest makes GET request for given url with given headers and returns web page contents as bytes with errors if any.
+func MakeGetRequest(url string, headers map[string]string) ([]byte, error) {
 
 	request, err := http.NewRequest("GET", url, nil)
 

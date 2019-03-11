@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+//CopyMap creates a copy of given map of string.
 func CopyMap(m map[string]string) map[string]string {
 	cp := make(map[string]string)
 	for k, v := range m {
@@ -33,6 +34,7 @@ func countDigits(i int64) (count int64) {
 	return count
 }
 
+//GetDateStr parses given time in milliseconds to human readable Date string.
 func GetDateStr(timeFloat64 float64) string {
 	timeMillis := int64(timeFloat64)
 	if countDigits(timeMillis) != 13 {

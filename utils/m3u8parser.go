@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+//ParseM3u8Content parses given m3u8Content content and returns map of map of string containing video format list.
 func ParseM3u8Content(m3u8Content string, playbackUrl string, playbackUrlData string) map[string]map[string]string {
 
 	var m3u8Info map[string]string

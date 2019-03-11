@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//GetMasterPlaybackUrl gets master playback url from playback uri page contents.
 func GetMasterPlaybackUrl(playbackUriPageContents []byte) (string, error) {
 
 	var masterPlaybackUrl string

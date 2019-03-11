@@ -14,8 +14,9 @@ import (
 
 var videoFormatsRetryCount = 0
 
-//TODO: show retry info upon debug level
+//GetVideoFormats gets all available video formats for given video url.
 func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]string, map[string]string, error) {
+//TODO: show retry info upon debug level
 
 	var requestHeaders = map[string]string{
 		"Hotstarauth":     GenerateHotstarAuth(),
@@ -23,7 +24,7 @@ func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]str
 		"X-Platform-Code": "JIO",
 	}
 
-	videoUrlContentBytes, err := Make_Get_Request(videoUrl, requestHeaders)
+	videoUrlContentBytes, err := MakeGetRequest(videoUrl, requestHeaders)
 
 	if err != nil {
 		if videoFormatsRetryCount+1 < 10 {
@@ -52,11 +53,11 @@ func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]str
 
 	if drmProtected, isDrmKeyAvailable := videoMetadata["drmProtected"]; isDrmKeyAvailable {
 		if drmProtected == "true" {
-			return nil, nil, fmt.Errorf("The contemt is DRM Protected.")
+			return nil, nil, fmt.Errorf("The content is DRM Protected.")
 		}
 	}
 
-	playbackUriContentBytes, err := Make_Get_Request(playbackUri, requestHeaders)
+	playbackUriContentBytes, err := MakeGetRequest(playbackUri, requestHeaders)
 
 	if err != nil {
 		if videoFormatsRetryCount+1 < 10 {
@@ -88,7 +89,7 @@ func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]str
 		queryParams = masterPlaybackUrlQueryParam[1]
 	}
 
-	masterPlaybackPageContentsBytes, err := Make_Get_Request(masterPlaybackUrl, requestHeaders)
+	masterPlaybackPageContentsBytes, err := MakeGetRequest(masterPlaybackUrl, requestHeaders)
 
 	if err != nil {
 		if videoFormatsRetryCount+1 < 10 {
@@ -109,6 +110,7 @@ func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]str
 
 }
 
+//ListVideoFormats lists video formats (or) title (or) description of the video for given video url.
 func ListVideoFormats(videoUrl string, videoId string, titleFlag bool, descriptionFlag bool) {
 	//fmt.Println("Listing video formats for video id, ", videoId)
 	videoFormats, videoMetadata, err := GetVideoFormats(videoUrl, videoId) //, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
@@ -156,6 +158,7 @@ func isPathExists(path string) bool {
 	return !info.IsDir()
 }
 
+//DownloadVideo downloads the video for given video format and video url. It also adds metadata to it if needed. FFMPEG path and Output video file name can be customized.
 func DownloadVideo(videoUrl string, videoId string, vFormat string, userFfmpegPath string, outputFileName string, metadataFlag bool) {
 
 	var ffmpegPath string
@@ -208,27 +211,27 @@ func DownloadVideo(videoUrl string, videoId string, vFormat string, userFfmpegPa
 				log.Fatal(err)
 			}
 
-			metaArgs := []string{}
-			metaArgs = append(metaArgs, "-i")
-			metaArgs = append(metaArgs, streamUrl)
+			ffmpegArgs := []string{}
+			ffmpegArgs = append(ffmpegArgs, "-i")
+			ffmpegArgs = append(ffmpegArgs, streamUrl)
 
 			if metadataFlag {
 				for metaDataName, metaDataValue := range videoMetadata {
-					metaArgs = append(metaArgs, "-metadata")
-					meta_data := fmt.Sprintf("%s=\"%s\"", metaDataName, metaDataValue)
-					metaArgs = append(metaArgs, meta_data)
+					ffmpegArgs = append(ffmpegArgs, "-metadata")
+					metaData := fmt.Sprintf("%s=\"%s\"", metaDataName, metaDataValue)
+					ffmpegArgs = append(ffmpegArgs, metaData)
 				}
 			} else {
 				fmt.Println("Skipping adding metedata for video file")
 			}
 
-			metaArgs = append(metaArgs, "-c")
-			metaArgs = append(metaArgs, "copy")
-			metaArgs = append(metaArgs, "-y")
-			metaArgs = append(metaArgs, outputFileName)
+			ffmpegArgs = append(ffmpegArgs, "-c")
+			ffmpegArgs = append(ffmpegArgs, "copy")
+			ffmpegArgs = append(ffmpegArgs, "-y")
+			ffmpegArgs = append(ffmpegArgs, outputFileName)
 			fmt.Println("Starting ffmpeg to download video...")
 
-			ffmpegCmd := exec.Command(ffmpegPath, metaArgs...)
+			ffmpegCmd := exec.Command(ffmpegPath, ffmpegArgs...)
 
 			stdoutIn, _ := ffmpegCmd.StdoutPipe()
 			stderrIn, _ := ffmpegCmd.StderrPipe()

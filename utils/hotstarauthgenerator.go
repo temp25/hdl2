@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+//GenerateHotstarAuth generates Hotstar authorization code.
 func GenerateHotstarAuth() string {
 	start := time.Now().UnixNano() / 1e9
 	expiry := start + 6000
