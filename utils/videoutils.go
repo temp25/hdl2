@@ -158,8 +158,8 @@ func isPathExists(path string) bool {
 	return !info.IsDir()
 }
 
-func getFfmpegArgs(streamUrl string, metadataFlag string, outputFileName string) []string{} {
-	ffmpegArgs := []string{}
+func getFfmpegArgs(streamUrl string, metadataFlag string, outputFileName string) []string {
+	ffmpegArgs := make([]string, 0)
 	ffmpegArgs = append(ffmpegArgs, "-i")
 	ffmpegArgs = append(ffmpegArgs, streamUrl)
 	
