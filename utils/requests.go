@@ -17,7 +17,6 @@ func MakeGetRequest(url string, headers map[string]string) ([]byte, error) {
 
 	//set the header(s) from header map to request variable
 	for headerName, headerValue := range headers {
-		fmt.Println("headerName", headerName, "headerValue", headerValue)
 		request.Header.Set(headerName, headerValue)
 	}
 
