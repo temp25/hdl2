@@ -4,8 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/temp25/hdl2/utils"
-	"log"
-	"net/url"
 	"os"
 	"strings"
 )

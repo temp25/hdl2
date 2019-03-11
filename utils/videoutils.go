@@ -112,17 +112,11 @@ func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]str
 
 //ListVideoFormats lists video formats (or) title (or) description of the video for given video url.
 func ListVideoFormats(videoUrl string, videoId string, titleFlag bool, descriptionFlag bool) {
-	//fmt.Println("Listing video formats for video id, ", videoId)
-	videoFormats, videoMetadata, err := GetVideoFormats(videoUrl, videoId) //, *formatFlag, *ffmpegPathFlag, *outputFileNameFlag, *metadataFlag)
+	videoFormats, videoMetadata, err := GetVideoFormats(videoUrl, videoId)
 
 	if err != nil {
 		log.Fatal(fmt.Errorf("Error occurred : %s", err))
 	}
-
-	/*fmt.Println("titleFlag : ", titleFlag)
-	fmt.Println("descriptionFlag : ", descriptionFlag)
-	fmt.Println("videoFormats : ", videoFormats)
-	fmt.Println("videoMetadata : ", videoMetadata)*/
 
 	if titleFlag || descriptionFlag {
 		if titleFlag {
@@ -158,7 +152,7 @@ func isPathExists(path string) bool {
 	return !info.IsDir()
 }
 
-func getFfmpegArgs(streamUrl string, metadataFlag bool, outputFileName string) []string {
+func getFfmpegArgs(videoMetadata map[string]string, streamUrl string, metadataFlag bool, outputFileName string) []string {
 	ffmpegArgs := make([]string, 0)
 	ffmpegArgs = append(ffmpegArgs, "-i")
 	ffmpegArgs = append(ffmpegArgs, streamUrl)
@@ -181,9 +175,13 @@ func getFfmpegArgs(streamUrl string, metadataFlag bool, outputFileName string) [
 	return ffmpegArgs
 }
 
-func runFfmpegCommand(ffmpegPath string, streamUrl string, metadataFlag bool, outputFileName string) {
+func runFfmpegCommand(ffmpegPath string, videoMetadata map[string]string, streamUrl string, metadataFlag bool, outputFileName string) {
 	
-	ffmpegCmd := exec.Command(ffmpegPath, getFfmpegArgs(streamUrl, metadataFlag, outputFileName))
+	var stdoutBuf, stderrBuf bytes.Buffer
+	
+	ffmpegArgs := getFfmpegArgs(videoMetadata, streamUrl, metadataFlag, outputFileName)
+	
+	ffmpegCmd := exec.Command(ffmpegPath, ffmpegArgs...)
 	
 	fmt.Println("Starting ffmpeg to download video...")
 	
@@ -226,7 +224,6 @@ func runFfmpegCommand(ffmpegPath string, streamUrl string, metadataFlag bool, ou
 func DownloadVideo(videoUrl string, videoId string, vFormat string, userFfmpegPath string, outputFileName string, metadataFlag bool) {
 
 	var ffmpegPath string
-	var stdoutBuf, stderrBuf bytes.Buffer
 
 	if len(strings.TrimSpace(userFfmpegPath)) != 0 {
 		ffmpegPath = userFfmpegPath
@@ -275,7 +272,7 @@ func DownloadVideo(videoUrl string, videoId string, vFormat string, userFfmpegPa
 				log.Fatal(err)
 			}
 			
-			runFfmpegCommand(ffmpegPath, streamUrl, metadataFlag, outputFileName)
+			runFfmpegCommand(ffmpegPath, videoMetadata, streamUrl, metadataFlag, outputFileName)
 			
 		} else {
 			fmt.Println("The STREAM-URL is not available. Please try again")
