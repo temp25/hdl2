@@ -70,9 +70,9 @@ func main() {
 		flag.Usage()
 		os.Exit(-1)
 	} else if videoUrl := flag.Args()[0]; videoUrl != "" {
-		
+
 		videoUrl = utils.GetParsedVideoUrl(videoUrl)
-		
+
 		isValidUrl, videoId := utils.IsValidHotstarUrl(videoUrl)
 		if isValidUrl {
 			if *listFormatsFlag || *titleFlag || *descriptionFlag {

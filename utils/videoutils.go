@@ -16,7 +16,7 @@ var videoFormatsRetryCount = 0
 
 //GetVideoFormats gets all available video formats for given video url.
 func GetVideoFormats(videoUrl string, videoId string) (map[string]map[string]string, map[string]string, error) {
-//TODO: show retry info upon debug level
+	//TODO: show retry info upon debug level
 
 	var requestHeaders = map[string]string{
 		"Hotstarauth":     GenerateHotstarAuth(),
@@ -156,7 +156,7 @@ func getFfmpegArgs(videoMetadata map[string]string, streamUrl string, metadataFl
 	ffmpegArgs := make([]string, 0)
 	ffmpegArgs = append(ffmpegArgs, "-i")
 	ffmpegArgs = append(ffmpegArgs, streamUrl)
-	
+
 	if metadataFlag {
 		for metaDataName, metaDataValue := range videoMetadata {
 			ffmpegArgs = append(ffmpegArgs, "-metadata")
@@ -166,58 +166,58 @@ func getFfmpegArgs(videoMetadata map[string]string, streamUrl string, metadataFl
 	} else {
 		fmt.Println("Skipping adding metadata for video file")
 	}
-	
+
 	ffmpegArgs = append(ffmpegArgs, "-c")
 	ffmpegArgs = append(ffmpegArgs, "copy")
 	ffmpegArgs = append(ffmpegArgs, "-y")
 	ffmpegArgs = append(ffmpegArgs, outputFileName)
-	
+
 	return ffmpegArgs
 }
 
 func runFfmpegCommand(ffmpegPath string, videoMetadata map[string]string, streamUrl string, metadataFlag bool, outputFileName string) {
-	
+
 	var stdoutBuf, stderrBuf bytes.Buffer
-	
+
 	ffmpegArgs := getFfmpegArgs(videoMetadata, streamUrl, metadataFlag, outputFileName)
-	
+
 	ffmpegCmd := exec.Command(ffmpegPath, ffmpegArgs...)
-	
+
 	fmt.Println("Starting ffmpeg to download video...")
-	
+
 	stdoutIn, _ := ffmpegCmd.StdoutPipe()
 	stderrIn, _ := ffmpegCmd.StderrPipe()
-	
+
 	var errStdout, errStderr error
-	
+
 	stdout := io.MultiWriter(os.Stdout, &stdoutBuf)
 	stderr := io.MultiWriter(os.Stderr, &stderrBuf)
-	
+
 	err := ffmpegCmd.Start()
-	
+
 	if err != nil {
 		log.Fatalf("ffmpegCmd.Start() failed with '%s'\n", err)
 	}
-	
+
 	go func() {
 		_, errStdout = io.Copy(stdout, stdoutIn)
 	}()
-	
+
 	go func() {
 		_, errStderr = io.Copy(stderr, stderrIn)
 	}()
-	
+
 	err = ffmpegCmd.Wait()
 	if err != nil {
 		log.Fatalf("ffmpegCmd.Run() failed with %s\n", err)
 	}
-	
+
 	if errStdout != nil || errStderr != nil {
 		log.Fatal("failed to capture stdout or stderr\n")
 	}
-	
+
 	os.Exit(0)
-	
+
 }
 
 //DownloadVideo downloads the video for given video format and video url. It also adds metadata to it if needed. FFMPEG path and Output video file name can be customized.
@@ -271,9 +271,9 @@ func DownloadVideo(videoUrl string, videoId string, vFormat string, userFfmpegPa
 			if err := os.Chmod(ffmpegPath, 0555); err != nil {
 				log.Fatal(err)
 			}
-			
+
 			runFfmpegCommand(ffmpegPath, videoMetadata, streamUrl, metadataFlag, outputFileName)
-			
+
 		} else {
 			fmt.Println("The STREAM-URL is not available. Please try again")
 			os.Exit(-3)
