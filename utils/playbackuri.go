@@ -10,52 +10,8 @@ import (
 
 var playbackUriRetryCount = 0
 
-//GetPlaybackUri gets the playback uri from the metadata in the given page contents.
-func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string) (string, map[string]string, error) {
-//TODO: show retry info upon debug level
-
-	var metadata = make(map[string]interface{})
-	appStateSearchRegex := *regexp.MustCompile(`<script>window.APP_STATE=(.+?)</script>`)
-	appStateSearchMatch := appStateSearchRegex.FindAllStringSubmatch(videoUrlPageContents, -1)
-
-	if len(appStateSearchMatch) > 0 {
-		var result map[string]interface{}
-		json.Unmarshal([]byte(appStateSearchMatch[0][1]), &result)
-
-		for k := range result {
-
-			//videoId := helper.After(k, "/")
-			if len(videoId) != 0 && strings.Contains(videoUrl, videoId) {
-
-				root, isCastOk := result[k].(map[string]interface{})
-
-				if !isCastOk && (playbackUriRetryCount+1 < 5) {
-					playbackUriRetryCount++
-					//fmt.Printf("GetPlaybackUri: cast to map[string]interface{} failed. retrying count : #%d\n", playbackUriRetryCount)
-					return GetPlaybackUri(videoUrlPageContents, videoUrl, videoId)
-				}
-
-				initialState := root["initialState"].(map[string]interface{})
-				contentData := initialState["contentData"].(map[string]interface{})
-				content := contentData["content"].(map[string]interface{})
-
-				for contentKey, contentValue := range content {
-					metadata[contentKey] = contentValue
-				}
-				//quit looping as we have got the required metdata
-				break
-			}
-
-		}
-
-	} else {
-		return "", nil, errors.New("Invalid appState JSON. Cannot retrieve playbackUri")
-	}
-
-	if playbackUri, ok := metadata["playbackUri"].(string); ok {
-		metaDataMap := make(map[string]string)
-
-		for k1, v1 := range metadata {
+func populateMetaDataMapWithMetadata(metaDataMap map[string]string, metadata map[string]interface{}) {
+	for k1, v1 := range metadata {
 			switch k1 {
 			case "title":
 				title := v1.(string)
@@ -92,9 +48,57 @@ func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string
 				//do nothing
 			}
 		}
+}
 
+//GetPlaybackUri gets the playback uri from the metadata in the given page contents.
+func GetPlaybackUri(videoUrlPageContents string, videoUrl string, videoId string) (string, map[string]string, error) {
+//TODO: show retry info upon debug level
+
+	var metadata = make(map[string]interface{})
+	appStateSearchRegex := *regexp.MustCompile(`<script>window.APP_STATE=(.+?)</script>`)
+	appStateSearchMatch := appStateSearchRegex.FindAllStringSubmatch(videoUrlPageContents, -1)
+
+	if len(appStateSearchMatch) > 0 {
+	
+		var result map[string]interface{}
+		json.Unmarshal([]byte(appStateSearchMatch[0][1]), &result)
+
+		for k := range result {
+
+			//videoId := helper.After(k, "/")
+			if len(videoId) != 0 && strings.Contains(videoUrl, videoId) {
+
+				root, isCastOk := result[k].(map[string]interface{})
+
+				if !isCastOk && (playbackUriRetryCount+1 < 5) {
+					playbackUriRetryCount++
+					//fmt.Printf("GetPlaybackUri: cast to map[string]interface{} failed. retrying count : #%d\n", playbackUriRetryCount)
+					return GetPlaybackUri(videoUrlPageContents, videoUrl, videoId)
+				}
+
+				initialState := root["initialState"].(map[string]interface{})
+				contentData := initialState["contentData"].(map[string]interface{})
+				content := contentData["content"].(map[string]interface{})
+
+				for contentKey, contentValue := range content {
+					metadata[contentKey] = contentValue
+				}
+				//quit looping as we have got the required metdata
+				break
+			}
+
+		}
+
+	} else {
+		return "", nil, errors.New("Invalid appState JSON. Cannot retrieve playbackUri")
+	}
+
+	if playbackUri, ok := metadata["playbackUri"].(string); ok {
+	
+		metaDataMap := make(map[string]string)
+		populateMetaDataMapWithMetadata(metaDataMap, metadata)
 		return playbackUri, metaDataMap, nil
-
+		
 	}
 	
 	return "", nil, errors.New("Error msg : Cannot retrieve playbackUri")

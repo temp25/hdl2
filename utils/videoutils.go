@@ -158,6 +158,29 @@ func isPathExists(path string) bool {
 	return !info.IsDir()
 }
 
+func getFfmpegArgs(streamUrl string, metadataFlag string, outputFileName string) []string{} {
+	ffmpegArgs := []string{}
+	ffmpegArgs = append(ffmpegArgs, "-i")
+	ffmpegArgs = append(ffmpegArgs, streamUrl)
+	
+	if metadataFlag {
+		for metaDataName, metaDataValue := range videoMetadata {
+			ffmpegArgs = append(ffmpegArgs, "-metadata")
+			metaData := fmt.Sprintf("%s=\"%s\"", metaDataName, metaDataValue)
+			ffmpegArgs = append(ffmpegArgs, metaData)
+		}
+	} else {
+		fmt.Println("Skipping adding metadata for video file")
+	}
+	
+	ffmpegArgs = append(ffmpegArgs, "-c")
+	ffmpegArgs = append(ffmpegArgs, "copy")
+	ffmpegArgs = append(ffmpegArgs, "-y")
+	ffmpegArgs = append(ffmpegArgs, outputFileName)
+	
+	return ffmpegArgs
+}
+
 //DownloadVideo downloads the video for given video format and video url. It also adds metadata to it if needed. FFMPEG path and Output video file name can be customized.
 func DownloadVideo(videoUrl string, videoId string, vFormat string, userFfmpegPath string, outputFileName string, metadataFlag bool) {
 
@@ -210,28 +233,9 @@ func DownloadVideo(videoUrl string, videoId string, vFormat string, userFfmpegPa
 			if err := os.Chmod(ffmpegPath, 0555); err != nil {
 				log.Fatal(err)
 			}
-
-			ffmpegArgs := []string{}
-			ffmpegArgs = append(ffmpegArgs, "-i")
-			ffmpegArgs = append(ffmpegArgs, streamUrl)
-
-			if metadataFlag {
-				for metaDataName, metaDataValue := range videoMetadata {
-					ffmpegArgs = append(ffmpegArgs, "-metadata")
-					metaData := fmt.Sprintf("%s=\"%s\"", metaDataName, metaDataValue)
-					ffmpegArgs = append(ffmpegArgs, metaData)
-				}
-			} else {
-				fmt.Println("Skipping adding metedata for video file")
-			}
-
-			ffmpegArgs = append(ffmpegArgs, "-c")
-			ffmpegArgs = append(ffmpegArgs, "copy")
-			ffmpegArgs = append(ffmpegArgs, "-y")
-			ffmpegArgs = append(ffmpegArgs, outputFileName)
+			
+			ffmpegCmd := exec.Command(ffmpegPath, getFfmpegArgs(streamUrl, metadataFlag, outputFileName))
 			fmt.Println("Starting ffmpeg to download video...")
-
-			ffmpegCmd := exec.Command(ffmpegPath, ffmpegArgs...)
 
 			stdoutIn, _ := ffmpegCmd.StdoutPipe()
 			stderrIn, _ := ffmpegCmd.StderrPipe()
