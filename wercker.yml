@@ -1,0 +1,20 @@
+box: google/golang
+
+build:
+
+    steps:
+    # Sets the go workspace and places your package
+    # in the right place in the workspace tree
+    - setup-go-workspace
+
+    # Build the project
+    - script:
+        name: Build application
+        code: |
+            go get github.com/temp25/hdl2
+            go build -o hdl
+
+    - script:
+        name: Copy binary
+        code: |
+          cp hdl "$WERCKER_OUTPUT_DIR"
