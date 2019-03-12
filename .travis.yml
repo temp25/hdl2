@@ -25,3 +25,13 @@ script:
 
 after_success:
  - goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+
+before_deploy:
+ - git status
+
+deploy:
+ provider: script
+ script: curl -sL https://git.io/goreleaser | bash
+ api_key: $GITHUB_TOKEN
+ on:
+    tags: true
