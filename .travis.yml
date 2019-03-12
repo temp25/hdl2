@@ -17,6 +17,7 @@ before_install:
 
 before_script:
  - go vet ./...
+ - chmod +x scripts/gofmt.sh
  - ./scripts/gofmt.sh
 
 script:
