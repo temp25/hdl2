@@ -1,0 +1,23 @@
+# .travis.yml
+
+language: go
+
+env:
+ global:
+  - MESSAGE="Tag Generated from TravisCI for build $TRAVIS_BUILD_NUMBER"
+  - CI_BUILD_NUMBER="$TRAVIS_BUILD_NUMBER"
+  - CI_PULL_REQUEST="$TRAVIS_PULL_REQUEST"
+  - CI_BRANCH="$TRAVIS_BRANCH"
+
+go:
+ - stable
+  
+before_install:
+ - go get github.com/mattn/goveralls
+
+before_script:
+ - go vet ./...
+ - ./scripts/gofmt.sh
+
+script:
+ - go test -v ./...
