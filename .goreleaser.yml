@@ -1,0 +1,23 @@
+# .goreleaser.yml
+# Build customization
+builds:
+  - main: main.go
+    binary: hdl
+    goos:
+      - windows
+      - darwin
+      - linux
+      - freebsd
+      - netbsd
+    goarch:
+      - amd64
+      - arm64
+      - 386
+      - arm
+# Archive customization
+archive:
+  format: zip
+  replacements:
+    darwin: macOS
+  files:
+    - README.md
