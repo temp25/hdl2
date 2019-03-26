@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-//GenerateHotstarAuth generates Hotstar authorization code.
-func GenerateHotstarAuth() string {
-	start := time.Now().UnixNano() / 1e9
-	expiry := start + 6000
+//Generate generates Hotstar authorization code for given time.
+func Generate(start int64) string {
+    
+    expiry := start + 6000
 
 	message := fmt.Sprintf("st=%d~exp=%d~acl=/*", start, expiry)
 
@@ -27,4 +27,10 @@ func GenerateHotstarAuth() string {
 	hmacedMessage := hex.EncodeToString(hmacInstance.Sum(nil))
 
 	return fmt.Sprintf("%s~hmac=%s", message, hmacedMessage)
+}
+
+//GenerateHotstarAuth generates Hotstar authorization code.
+func GenerateHotstarAuth() string {
+	start := time.Now().UnixNano() / 1e9
+	return Generate(start)
 }
