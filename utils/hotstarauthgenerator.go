@@ -10,8 +10,8 @@ import (
 
 //Generate generates Hotstar authorization code for given time.
 func Generate(start int64) string {
-    
-    expiry := start + 6000
+
+	expiry := start + 6000
 
 	message := fmt.Sprintf("st=%d~exp=%d~acl=/*", start, expiry)
 
