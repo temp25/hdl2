@@ -3,10 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/temp25/hdl2/utils"
+	"github.com/Gotham25/hotstar-dl/utils"
 	"os"
 	"strings"
 )
+
+//Build version info vars injected by goreleaser
+var version string
+var commit string
+var date string
 
 //flag descriptions
 var helpFlagDesc = "Prints this help and exit"
@@ -17,6 +22,7 @@ var metadataFlagDesc = "Add metadata to the video file"
 var outputFileNameFlagDesc = "Output file name"
 var titleFlagDesc = "Prints video title and exit"
 var descriptionFlagDesc = "Prints video description and exit"
+var versionFlagDesc = "Prints version info and exits"
 
 //flag declarations
 var helpFlag = flag.Bool("help", false, helpFlagDesc)
@@ -27,6 +33,7 @@ var metadataFlag = flag.Bool("add-metadata", false, metadataFlagDesc)
 var outputFileNameFlag = flag.String("output", "", outputFileNameFlagDesc)
 var titleFlag = flag.Bool("get-title", false, titleFlagDesc)
 var descriptionFlag = flag.Bool("get-description", false, descriptionFlagDesc)
+var versionFlag = flag.Bool("version", false, versionFlagDesc)
 
 func init() {
 	//shorthand notations
@@ -37,6 +44,7 @@ func init() {
 	flag.StringVar(outputFileNameFlag, "o", "", outputFileNameFlagDesc)
 	flag.BoolVar(titleFlag, "t", false, titleFlagDesc)
 	flag.BoolVar(descriptionFlag, "i", false, descriptionFlagDesc)
+	flag.BoolVar(versionFlag, "v", false, versionFlagDesc)
 
 	//custom flag usage
 	flag.Usage = func() {
@@ -50,6 +58,7 @@ func init() {
 		fmt.Fprintf(os.Stdout, "-t, --get-title\t\t%s\n", titleFlagDesc)
 		fmt.Fprintf(os.Stdout, "-i, --get-description\t%s\n", descriptionFlagDesc)
 		fmt.Fprintf(os.Stdout, "-o, --output\t\t%s\n", outputFileNameFlagDesc)
+		fmt.Fprintf(os.Stdout, "-v, --version\t\t%s\n", versionFlagDesc)
 		os.Exit(0)
 		//flag.PrintDefaults()
 	}
@@ -61,6 +70,8 @@ func main() {
 	flagCount := len(flag.Args())
 	if *helpFlag {
 		flag.Usage()
+	} else if *versionFlag {
+		fmt.Printf("Version : %s\ngit commit SHA : %s \nBuilt on : %s\n", version, commit, date)
 	} else if flagCount == 0 {
 		fmt.Println("Must provide atleast one url at end")
 		flag.Usage()
